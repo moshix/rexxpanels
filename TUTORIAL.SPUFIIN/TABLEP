@@ -1,0 +1,19 @@
+CREATE TABLE AIRPORT                                                    00010010
+  (                                                                     00020000
+    AIRPORTID   CHAR(5) NOT NULL,                                       00030007
+    NAME        CHAR(66),                                               00040007
+    CITY        CHAR(33),                                               00041007
+    COUNTRY     CHAR(32),                                               00042007
+    IATA        CHAR(3),                                                00043007
+    ICAO        CHAR(4),                                                00044007
+    LATITUDE    CHAR(20),                                               00045007
+    LONGITUDE   CHAR(20),                                               00046007
+    ALTITUDE    CHAR(19),                                               00046107
+    TIMEZONE    CHAR(5),                                                00046207
+    DST         CHAR(1),                                                00046307
+    TZ          CHAR(30),                                               00046407
+    TYPE        CHAR(19),                                               00046507
+    SOURCE      CHAR(30),                                               00046607
+    PRIMARY KEY(AIRPORTID)                                              00047007
+  )                                                                     00050000
+    IN FLIGHTDB.FLIGHTTS;                                               00060011

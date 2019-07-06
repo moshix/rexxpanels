@@ -1,0 +1,31 @@
+<!--DOC LANG DTL DOC-->
+<!--DOC DESC This is the DTL actionbar for every panel DOC-->
+<!--*****************************************************************-->
+<!-- create the actionbar -->
+  <ab>
+    <!-- create actionbar choice -->
+    <abc>SCHEDULED_FLIGHTS
+      <!-- create pulldown choices -->
+      <pdc><M>DISPLAY
+        <action setvar=menuslct value='1.1'>
+    <abc>FLIGHTS
+      <pdc><M>DISPLAY
+        <action setvar=menuslct value='2.1'>
+      <pdc><M>SEARCH
+        <action setvar=menuslct value='2.2'>
+    <abc>AIRCRAFTS
+      <pdc><M>GULFSTREAM
+        <action setvar=menuslct value='3.1'>
+      <pdc><M>A220
+        <action setvar=menuslct value='3.2'>
+      <pdc><M>B737-800
+        <action setvar=menuslct value='3.3'>
+      <pdc><M>A350ULR
+        <action setvar=menuslct value='3.4'>
+      <pdc><M>B777X
+        <action setvar=menuslct value='3.5'>
+    <abc>SAFETY
+      <pdc><M>RECORDS
+        <action setvar=menuslct value='4.1'>
+  </ab>
+<!--*****************************************************************-->

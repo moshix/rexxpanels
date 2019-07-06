@@ -1,0 +1,29 @@
+<!--DOC LANG DTL DOC-->
+<!--DOC DESC This is the panel for creating a single user DOC-->
+<!--*****************************************************************-->
+<!doctype dm system (
+  <!entity actnbar system>
+  <!entity pvardef system>)>
+<!-- get external variable list -->
+&pvardef;
+<!-- Panel Name: FLIGHTSE -->
+<panel keylist=ISRSAB name=flightse cursor=cmdarea help=sw18bis>
+  <textline>
+      <textseg>&ztime
+      <textseg expand=both> SELECT FLIGHTS
+      <textseg>&zdate(8)
+  </textline>
+  <!-- get external action bar code -->
+  <!--&actnbar;-->
+  <cmdarea>Command
+ <dtafld name=scn datavar=scn entwidth=33 pmtwidth=20 required=yes help=sw18bis>
+  Source City
+  <dtafldd>(Required)
+  <divider>
+  <dtafld name=dcn datavar=dcn entwidth=33 pmtwidth=20 required=no  deswidth=*
+       help=sw18bis>
+  Destination City
+    <dtafldd>(Not required)</dtafldd>
+  <divider>
+  <!--dtafld datavar=warnmsg entwidth=60 pmtwidth=0 usage=out-->
+</panel>

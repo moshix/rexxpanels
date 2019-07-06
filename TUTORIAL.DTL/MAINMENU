@@ -1,0 +1,34 @@
+<!--DOC LANG DTL DOC-->
+<!--DOC DESC This DTL source code describes the main menu DOC-->
+<!--*****************************************************************-->
+<!doctype dm system (
+  <!entity actnbar system>)>
+<!--DOC Name des Panels: MAINMEN DOC-->
+<panel name=MAINMEN keylist=ISRSAB menu cursor=cmdarea>
+  <textline>
+    <textseg>&ztime
+    <textseg expand=both>AVATION DATA DISPLAY FACILITY
+    <textseg>&zdate(8)
+  </textline>
+<!-- get external action bar code -->
+&actnbar;
+<!--*****************************************************************-->
+<!-- actual panel body starts here -->
+<!-- Default name for cmdarea is ZCMD -->
+  <cmdarea>Command
+<!-- Creating a selection field as a menu -->
+  <selfld type=menu entwidth=4 selwidth=40 trail='second'>
+    <choice> <ps var=zcmd value='1'>
+    Lookup Flights</ps>
+      <action setvar=menuslct value='1'>
+    <choice> <ps var=zcmd value='2'>
+    Airlines        </ps>
+      <action setvar=menuslct value='2'>
+    <choice> <ps var=zcmd value='3'>
+    Aircrafts   </ps>
+      <action setvar=menuslct value='3'>
+    <choice> <ps var=zcmd value='4'>
+    Safety Info   </ps>
+      <action setvar=menuslct value='4'>
+  </selfld>
+</panel>

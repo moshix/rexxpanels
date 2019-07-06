@@ -1,0 +1,5 @@
+CLS      CSECT
+CLS      RMODE ANY
+         STLINENO LINE=1,CLEAR=YES
+         BR    14
+         END

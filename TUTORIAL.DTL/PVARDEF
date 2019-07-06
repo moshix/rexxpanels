@@ -1,0 +1,51 @@
+<!--DOC LANG DTL DOC-->
+<!--DOC DESC Variable list for the Panels DOC-->
+<!--*****************************************************************-->
+<varclass name=char2cls type='char 2'>
+<varclass name=char3cls type='char 3'>
+<varclass name=char4cls type='char 4'>
+<varclass name=char5cls type='char 5'>
+<varclass name=char8cls type='char 8'>
+<varclass name=char10cl type='char 10'>
+<varclass name=char12cl type='char 12'>
+<varclass name=char20cl type='char 20'>
+<varclass name=char33cl type='char 33'>
+<varclass name=char80cl type='char 80'>
+<varlist>
+  <!-- action bar -->
+  <!--vardcl name=iata varclass=char3cls-->
+  <!-- iata of aiport -->
+  <vardcl name=icao varclass=char4cls>
+  <!-- icao of airline/airport-->
+  <vardcl name=stdv varclass=char8cls>
+  <!-- standart 8 character variable -->
+  <vardcl name=idvar varclass=char5cls>
+  <!-- id-numbervariable -->
+  <vardcl name=scn varclass=char33cls>
+  <!-- citynames of source -->
+  <vardcl name=dcn varclass=char33cls>
+  <!-- citynames of destination-->
+  <vardcl name=shrtname varclass=char20cls>
+  <!-- shortname-->
+  <vardcl name=usrid varclass=char8cls>
+  <!-- user range start -->
+  <vardcl name=desc1 varclass=char12cls>
+  <!-- describtion 1    -->
+  <vardcl name=desc2 varclass=char12cls>
+  <!-- describtion 2    -->
+  <vardcl name=desc3 varclass=char12cls>
+  <!-- describtion 3    -->
+  <vardcl name=desc4 varclass=char12cls>
+  <!-- describtion 4    -->
+  <vardcl name=strtnr varclass=char10cl>
+  <!-- user range end -->
+  <vardcl name=endnr varclass=char10cl>
+  <!-- warning message before creating or deleting -->
+  <vardcl name=warnmsg varclass=char80cl>
+  <!-- helps figuring out sorting -->
+  <vardcl name=helpsort varclass=char80cl>
+  <!-- warning message before using the user list -->
+  <vardcl name=warnmsg2 varclass=char80cl>
+  <!-- command variable, the old one behaves bvery strange -->
+  <vardcl name=menuslct varclass=char4cls>
+</varlist>

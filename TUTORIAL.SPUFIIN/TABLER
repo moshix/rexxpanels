@@ -1,0 +1,18 @@
+CREATE TABLE ROUTES                                                     00010012
+  (                                                                     00020000
+    ROW_ID      INTEGER NOT NULL GENERATED ALWAYS                       00021012
+        AS IDENTITY                                                     00022012
+          (START WITH 1, INCREMENT BY 1, NO CACHE, NO CYCLE,            00023012
+           NO ORDER, MAXVALUE 2147483647, MINVALUE 1),                  00024012
+    AIRLINE     CHAR(3),                                                00030013
+    AIRLID      CHAR(5),                                                00040013
+    SOURCE      CHAR(3),                                                00041013
+    SOURCEID    CHAR(5),                                                00042013
+    DEST        CHAR(3),                                                00043012
+    DESTID      CHAR(5),                                                00044013
+    CODESHARE   CHAR(1),                                                00045013
+    STOPS       CHAR(1),                                                00046013
+    PLANE       CHAR(40),                                               00046113
+    PRIMARY KEY(ROW_ID)                                                 00047012
+  )                                                                     00050000
+    IN FLIGHTDB.ROUTETS;                                                00060013

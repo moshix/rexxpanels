@@ -1,0 +1,13 @@
+CREATE TABLE AIRLINES                                                   00010002
+  (                                                                     00020000
+    AIRLID      CHAR(4) NOT NULL,                                       00030004
+    NAME        CHAR(79),                                               00040006
+    ALIAS       CHAR(31),                                               00041002
+    IATA        CHAR(3),                                                00042002
+    ICAO        CHAR(4),                                                00043002
+    CALLSIGN    CHAR(48),                                               00044002
+    COUNTRY     CHAR(35),                                               00045002
+    ACTIVE      CHAR(1),                                                00046004
+    PRIMARY KEY(AIRLID)                                                 00047004
+  )                                                                     00050000
+    IN FLIGHTDB.FLIGHTTS;                                               00060002

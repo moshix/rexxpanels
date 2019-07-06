@@ -1,0 +1,6 @@
+/** LANG REXX **/                                                       00010000
+/** DESC Callable method which returns the prefix of the path the whole 00020000
+         gram lies in **/                                               00030000
+/** IN Nothing. **/                                                     00040000
+/** OUT Path Prefix **/                                                 00050000
+RETURN 'YOURHLQ.TUTORIAL'                                               00070006

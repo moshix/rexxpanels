@@ -1,0 +1,347 @@
+/* REXX                                                                       */
+/*----------------------------------------------------------------------------*/
+/*                                                                            */
+/*        AVIATION DATA DISPLAY FACILITY                                      */
+/*                                                                            */
+/*----------------------------------------------------------------------------*/
+/* DISPLAY WELCOME "ASCII-ART"                                                */
+/*----------------------------------------------------------------------------*/
+address tso
+"call '"path()".LOAD(ISPCLEAR)'"
+  dat=""path()".DATA(DATA)"
+"ALLOC DD(eingabe) SHR REUSE DSN('"dat"')"
+"EXECIO * DISKR eingabe (FINIS)"
+"FREE DD(eingabe)"
+do i = 1 to queued()
+  parse pull record
+  say substr(record,1,60)
+end
+
+/*----------------------------------------------------------------------------*/
+/* INTIALISE GLOBAL VARIABLES                                                 */
+/* CREATE THE TABLES TO EASILY RECREATE IT IN AN UPDATE FUNCTION              */
+/*----------------------------------------------------------------------------*/
+global = 'glo.'
+if Initialise() /= 0 then exit 8
+TBL_DDN = glo.TBLDDN
+call create_table
+
+/*############################################################################*/
+/* STARTS THE MAINMENU PANEL                                                  */
+do forever
+  "ISPEXEC DISPLAY PANEL(MAINMEN)"
+  if rc=8 then call exitpgm
+  call menu_handler
+end
+
+/*----------------------------------------------------------------------------*/
+/* MENU HANDLER                                                               */
+/* HANDLES THE MENU                                                           */
+/* OPENS THE NEXT PANEL OR PROCESSING INFORMATION BEFOREHAND                  */
+/* BUT NOTHING HAPPENS IF THERE WAS NO INPUT FROM MENUSLCT                    */
+/*----------------------------------------------------------------------------*/
+menu_handler:
+selection = strip(menuslct)
+menuslct = ''
+if second /= '' then
+  selection = selection||'.'||second
+else nop
+select
+
+/*----------------------------------------------------------------------------*/
+/* LOOKUP FLIGHTS                                                             */
+/* DEFINES AN SQL-STATEMENT                                                   */
+/* STARTS THE TABLE PROCESSING                                                */
+/*                                                                            */
+/*----------------------------------------------------------------------------*/
+  when selection='1' then
+    do forever
+      'ISPEXEC DISPLAY PANEL(FLIGHTSE)'
+      SQL="SELECT C.NAME, ",
+               ||"A.CITY, ",
+               ||"D.CITY, ",
+               ||"A.LATITUDE, ",
+               ||"A.LONGITUDE, ",
+               ||"D.LATITUDE, ",
+               ||"D.LONGITUDE  ",
+               ||"FROM USER06.AIRPORTS AS A ",
+               ||"JOIN ",
+               ||"USER06.ROUTES AS B ON A.AIRPORTID = B.SOURCEID ",
+               ||"JOIN ",
+               ||"USER06.AIRLINES AS C ON B.AIRLID=C.AIRLID ",
+               ||"JOIN ",
+               ||"USER06.AIRPORTS AS D ON B.DESTID=D.AIRPORTID ",
+               ||"WHERE ",
+               ||"A.CITY LIKE '"scn"%' ",
+               ||"AND ",
+               ||"D.CITY LIKE '"dcn"%'"
+      if rc=8 then return
+      else if menuslct = '' then
+        call start_table
+        call menu_handler
+    end
+
+/*----------------------------------------------------------------------------*/
+/* LOOKUP AIRLINES                                                            */
+/*----------------------------------------------------------------------------*/
+  when selection='2' then
+    do forever
+      call update_table
+      call display_table
+      if rc = 8 then
+        do
+          ZTDTOP = '000000'
+          return
+        end
+      else if menuslct = '' then call info_s
+      call menu_handler
+    end
+
+/*----------------------------------------------------------------------------*/
+/* e                                                                          */
+/*----------------------------------------------------------------------------*/
+  when selection='4' then
+    do forever
+      'ISPEXEC DISPLAY PANEL(        )'
+      if rc=8 then return
+      else if menuslct = '' then
+        "EXEC '"path()".EXEC(TEST)' '"||usrid pw||"'"
+      call menu_handler
+    end
+
+/*----------------------------------------------------------------------------*/
+/* e                                                                          */
+/*----------------------------------------------------------------------------*/
+  when selection='5' then
+
+    do forever
+      'ISPEXEC DISPLAY PANEL(        )'
+      if rc=8 then return
+      else IF menuslct = '' then call rrc
+      call menu_handler
+    end
+  OTHERWISE nop
+end
+return
+
+/*############################################################################*/
+/*----------------------------------------------------------------------------*/
+/* PROGRAM EXIT                                                               */
+/* SCRATCHES THE TABLES AND FREES LIBRARYS                                    */
+/*----------------------------------------------------------------------------*/
+exitpgm:
+'ISPEXEC TBend FLIGHTBL'
+call LIBDEF_Libraries(glo.ALLDDNS)
+EXIT
+
+/*############################################################################*/
+/*----------------------------------------------------------------------------*/
+/* START THE TABLE DISPLAY                                                    */
+/*----------------------------------------------------------------------------*/
+start_table:
+      call load_table(SQL)
+      call update_table
+    do forever
+      call display_table
+      IF RC = 8 then
+        do
+          ZTDTOP = '000000'
+          return
+        end
+      else IF menuslct = '' then call info_s
+      call menu_handler
+    end
+return
+
+/*----------------------------------------------------------------------------*/
+/* CREATES THE TABLE IN A FUNCTION                                            */
+/* USES GLOBAL VARIABLES                                                      */
+/*----------------------------------------------------------------------------*/
+create_table:
+  "ISPEXEC TBCREATE" glo.TBLNAME "REPLACE",
+                    "LIBRARY("glo.TBLDDN")",
+                    "KEYS("glo.TBLKEYS")",
+                    "NAMES("glo.TBLFIELDS")"
+  if rc /=0 then say 'RC='rc 'from TBCREATE of' glo.TBLNAME
+return
+
+/*----------------------------------------------------------------------------*/
+/* UPDATE THE TABLE WITH SQL OUTPUT                                           */
+/* SCRATCH THE PREVIOUS VERSION OF THE TABLE                                  */
+/* FILL THE TABLE WITH THE LATEST OUTPUT                                      */
+/*----------------------------------------------------------------------------*/
+update_table:
+   'ISPEXEC TBend  FLIGHTBL'
+   call create_table
+   DESC1 = output.0.1
+   DESC2 = output.0.2
+   DESC3 = output.0.3
+   DESC4 = 'DISTANCE'
+do z = 1 TO output.0
+               KEYT = z
+               DAT1 = output.z.1
+               DAT2 = output.z.2
+               DAT3 = output.z.3
+               DAT4 = ''
+       /*      DIST = DISTANCE(output.z.4,output.z.5,output.z.6,output.z.7) */
+  'ISPEXEC TBADD FLIGHTBL'
+end
+return
+
+/*----------------------------------------------------------------------------*/
+/* ALTER THE SELECTED ROW                                                     */
+/*----------------------------------------------------------------------------*/
+alter_row: parse arg KEYT,DAT1,DAT2,DAT3
+  newkey=KEYT
+  'ISPEXEC TBDELETE FLIGHTBL'
+  KEYT=newkey
+  DAT4=DISTANCE(output.KEYT.4,output.KEYT.5,output.KEYT.6,output.KEYT.7)
+  'ISPEXEC TBADD FLIGHTBL'
+  TROWCMD =''
+  DAT4=''
+return 0
+
+/*----------------------------------------------------------------------------*/
+/* DISPLAY TABLE WITH PANEL                                                   */
+/*----------------------------------------------------------------------------*/
+
+display_table:
+  /* place row pointer to the top */
+  'ISPEXEC TBTOP FLIGHTBL'
+  /* ZTDTOP is a number, if the panel is already open| empty if it is the first
+     time it is opened */
+  if datatype(ZTDTOP, W) == 1 then
+    /* scroll to the latest row which was on top */
+    'ISPEXEC TBSKIP FLIGHTBL NUMBER('ZTDTOP')'
+  else nop
+  /* finally show the table / panel */
+  'ISPEXEC TBDISPL FLIGHTBL PANEL(flightpa)'
+return
+
+
+/*----------------------------------------------------------------------------*/
+/* LOAD OUTPUT VARIABLE WITH SQL RESPONSE                                     */
+/*----------------------------------------------------------------------------*/
+load_table: procedure expose output.
+  sqlstmt=arg(1)
+  "SUBCOM DSNREXX"
+  s_rc=RXSUBCOM('ADD','DSNREXX','DSNREXX')
+  address dsnrexx
+  "CONNECT" D121
+  "EXECSQL SET CURRENT PACKAGESET='DSNREXCS'"
+  "EXECSQL DECLARE C1 CURSOR FOR S1"
+  if SQLCode /= 0 then SAY 'Error at declare|'
+  "EXECSQL PREPARE S1 INTO :SQLDA_C1 FROM :SQLStmt"
+  if SQLCode /= 0 then SAY 'Error at prepare|'
+  do I = 1 to SQLDA_C1.SQLD
+     output.0.I = SQLDA_C1.I.SqlName
+     output.0.0=SQLDA_C1.SQLD
+   /*Say 'Column 'I' is 'SQLDA_C1.I.SqlName*/
+  end
+  "EXECSQL OPEN C1"
+  if SQLCode /= 0 then SAY 'Error at open|'
+     z=0
+  do forever
+     z = z+1
+     "EXECSQL FETCH C1 USING DESCRIPTOR :SQLDA_C1"
+     select
+        when SqlCode = 0   then
+             do I = 1 to SQLDA_C1.SQLD
+                ColName = SQLDA_C1.I.SqlName
+                ColValue = STRIP(SQLDA_C1.I.SqlData)
+                output.z.I = STRIP(SQLDA_C1.I.SqlData)
+             /* say z 'Column 'ColName' contains <'ColValue'>' */
+             /* say output.z.I */
+                output.0=z
+             end
+        when SqlCode = 100 then Leave
+        Otherwise               SAY 'ERROR at fetch|'
+     end
+  end
+  "EXECSQL CLOSE C1"
+  If SQLCode /= 0 then call DisplaySQLError('CLOSE C1')
+  "EXECSQL COMMIT"
+  If SQLCode /= 0 then call DisplaySQLError('COMMIT')
+  "DISCONNECT";
+  S_RC=RXSUBCOM('DELETE','DSNREXX','DSNREXX')
+  return
+
+
+/*----------------------------------------------------------------------------*/
+/* PEFORM LINE COMMANDS                                                       */
+/*----------------------------------------------------------------------------*/
+info_s:
+SELECT
+  when zcmd = 'update' then
+    call load_table(SQL)
+  when zcmd = 'rfrsh' then
+    call update_table
+  when zcmd = 'sort' then
+    call sort_table
+  when TROWCMD /= '' then
+    do
+      SELECT
+        when TROWCMD = 'dist' | TROWCMD = 'd'  then
+            IF alter_row(KEYT,DAT1,DAT2,DAT3) /= 0 then return
+        when TROWCMD = 'cancel' | TROWCMD = 'c' then
+          "EXEC '"path()".SCRIPTS(CNCUSER)' '"||TUID||"'"
+       OTHERWISE nop
+       end
+      /* save the line which was written to in variable row */
+    /*'ISPEXEC TBDELETE FLIGHTBL'*/
+   /*'ISPEXEC TBADD FLIGHTBL'*/
+   /* 'ISPEXEC TBSKIP FLIGHTBL NUMBER(0) POSITION(row)' */
+      /* set the variable which is checked for the last highest row */
+  /*ZTDTOP = row */
+
+    end
+  OTHERWISE nop
+ end
+
+return
+
+Initialise: procedure expose (global)
+
+/* Table details */
+glo.TBLDSN     = ''path()'.TABLES'
+glo.TBLDDN     = 'TEMPTLIB'
+glo.TBLNAME    = 'FLIGHTBL'
+glo.TBLKEYS    = 'KEYT'
+glo.TBLFIELDS  = 'DAT1 DAT2 DAT3 DAT4'
+
+/* Names and whereabouts of ISPF panels */
+glo.PNLDSN     = ''path()'.PANELS'
+glo.PNLDDN     = 'ISPPLIB'
+glo.PNLMAIN    = 'FLIGHTPA'
+glo.PNLSEL     = 'FLIGHTSE'
+
+/* All things LIBDEF */
+glo.ALLDDNS    = glo.TBLDDN glo.PNLDDN
+glo.ALLDSNS    = glo.TBLDSN glo.PNLDSN
+if LIBDEF_Libraries(glo.ALLDDNS,glo.ALLDSNS) /= 0 then return 8
+
+return 0
+
+
+
+/** -------------------------------------------------------------
+    LIBDEF libraries, report any alloc errors, unLIBDEF too.
+    ------------------------------------------------------------- */
+LIBDEF_Libraries: procedure
+parse arg DDNames,DSNames
+/* LIBDEF many things, rollback and barf if one is a bit duff */
+do i = 1 to WORDS(DDNames)
+   if DSNames = '' then
+      "ISPEXEC LIBDEF" WORD(DDNames,i)
+   else do
+      "ISPEXEC LIBDEF" WORD(DDNames,i) "DATASET ID('"WORD(DSNames,i)"') STACK"
+      if rc /=0 then do
+         say 'RC='rc 'from LIBDEF of' WORD(DSNames,i) ,
+                                 'to' WORD(DDNames,i)
+         call LIBDEF_Libraries SUBWORD(DDNames,i)
+         return 8
+         end
+      end
+end
+return 0
+

@@ -1,0 +1,26 @@
+<!--DOC LANG DTL DOC-->
+<!--DOC DESC This is the user list panel code DOC-->
+<!--*****************************************************************-->
+<!doctype dm system (
+  <!entity actnbar system>
+  <!entity pvardef system>)>
+<!-- get external variable list -->
+&pvardef;
+<!-- Panel Name: FLIGHTPA -->
+<panel keylist=ISRSPBC name=flightpa help=sw18bis cursor=cmdarea>
+  <textline>
+    <textseg>&ztime
+    <textseg expand=both>Lookup Flights
+    <textseg>&zdate(8)
+  </textline>
+  <!-- get external action bar code -->
+  <!--&actnbar;-->
+  <cmdarea>Command
+  <lstfld vardcl=no>
+    <lstcol datavar=TROWCMD usage=in colwidth=8>
+    <lstcol datavar=AIRL usage=out line1 colwidth=18>AIRLINE
+    <lstcol datavar=SOURC usage=out colwidth=12>FROM
+    <lstcol datavar=DEST usage=out colwidth=12>TO
+    <lstcol datavar=DIST usage=out colwidth=12>DISTANCE
+  </lstfld>
+</panel>

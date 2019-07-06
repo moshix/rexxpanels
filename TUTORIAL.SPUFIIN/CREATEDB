@@ -1,0 +1,74 @@
+------------------------------------------------------------------------
+--                                                                    --
+-- Database 2 Administration Tool (DB2 Admin) , program 5655-W34      --
+--                                                                    --
+-- ADB2GEN  -  Extract object definitions from the DB2 Catalog tables --
+--                                                                    --
+-- Input prepared on : DBX0 (1210 )   Extract time : 2018-07-24 15:23 --
+--                                                                    --
+-- Catalog values overridden : none
+--                                                                    --
+-- Generate : SG=Y DB=Y TS=Y TB=Y VW=Y IX=Y SY=Y AL=Y LB=Y CM=Y FK=Y  --
+--            TG=Y UT=N UF=N SP=N SQ=N RO=N TC=N MK=Y PM=Y AC=Y GV=N  --
+-- Grants   : SG=Y DB=Y TS=Y TB=Y VW=Y SC=N UT=N UF=N SP=N SQ=N GV=N  --
+--                                                                    --
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+--                                                                    --
+-- ADB2GEN: Generate DDL for Database FLIGHTDB                        --
+--                                                                    --
+------------------------------------------------------------------------
+--
+--
+------------------------------------------------------------------------
+-- Stogroup=STGFMS OPTIONAL - GET YOUR STGROUP BY YOUR DB2 TEAM
+------------------------------------------------------------------------
+--
+--
+--CREATE STOGROUP STGFMS
+--  VOLUMES("*")
+--  VCAT YOURVCAT;
+
+--COMMIT;
+--
+--
+------------------------------------------------------------------------
+-- Database=FLIGHTDB Stogroup=STGFMS OPTIONAL -GET DATABASE BY YOUR DBA 
+------------------------------------------------------------------------
+--
+--
+--CREATE DATABASE FLIGHTDB
+--  BUFFERPOOL BP0
+--  INDEXBP    BP0
+--  CCSID      EBCDIC
+--  STOGROUP   STGFMS;
+--
+--COMMIT;
+--
+------------------------------------------------------------------------
+-- Database=FLIGHTDB Stogroup=STGFMS
+-- Table space=FLIGHTDB.FLIGHTTS
+------------------------------------------------------------------------
+--
+--
+  CREATE TABLESPACE PORTSTS
+    IN FLIGHTDB
+    USING STOGROUP STGFMS
+    PRIQTY 20 SECQTY 20
+    ERASE  NO
+    FREEPAGE 0 PCTFREE 5 FOR UPDATE 0
+    GBPCACHE CHANGED
+    TRACKMOD YES
+    LOGGED
+    SEGSIZE 4
+    BUFFERPOOL BP0
+    LOCKSIZE PAGE
+    LOCKMAX SYSTEM
+    CLOSE NO
+    COMPRESS YES
+    CCSID      EBCDIC
+    DEFINE YES
+    MAXROWS 255;
+--
+  COMMIT;
+--
