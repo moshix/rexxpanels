@@ -1,0 +1,55 @@
+***************************** Top of Data *****************************
+)PANEL                                                                 
+)ATTR                                                                  
+. TYPE(PT)            /* Panel title */               */               
+% TYPE(ET)            /* Emphasized text */           */               
++ TYPE(NT)            /* Normal text */               */               
+_ TYPE(NEF)           /* Normal entry field */        */               
+$ TYPE(AB)            /* Action bar */                */               
+@ TYPE(ABSL)          /* Action bar separator line */ */               
+)ABC desc(Menu)                                                        
+PDC DESC('Send') ACTION RUN(SEND)                                      
+PDC DESC('End') ACTION RUN(END)                                        
+PDC DESC('Cancel') ACTION RUN(CANCEL)                                  
+)ABCINIT                                                               
+.zvars = 'MENUX'                                                       
+)ABC DESC(Help)                                                        
+PDC DESC('Extended Help...')                                           
+ACTION RUN(HELP)                                                       
+)ABCINIT                                                               
+.ZVARS = HELPX                                                         
+.RESP = ENTER         /* Don't even show choice */   */                
+)BODY                                                                  
++$ Menu $ Help +                                                       
+@--------------------------------------------------------------------+ 
+.Send TSO Message Dialog for moshix mainframe                          
+%===>_ZCMD +                                                           
++Pls type your message below                                           
++Message        :_msg                                                + 
++TSO recipient  :_tsou   +                                             
+)PROC                                                                  
+*REXX(*,msg,tsou)                                                      
+Trace O                                                                
+upper zcmd                                                             
+cpos = "'ZCMD'"                                                        
+if msg = "" then do                                                    
+  say 'message field is empty yo!'                                     
+end                                                                    
+if tsou = "" then do                                                   
+  say 'tso user field is empty man'                                    
+  rc = 8                                                               
+end                                                                    
+if length(tsou) >8 then do                                             
+  say 'tso user field is too long, dude'                               
+  rc = 8                                                               
+end                                                                    
+if zcmd = 'SEND' & msg ¬= "" & tsou ¬= " " then do                     
+ say 'sending'                                                         
+ ADDRESS TSO "SEND  '"msg"' USER("tsou") NOW NOWAIT"                   
+end                                                                    
+ if zcmd = 'Cancel' then do                                            
+   say 'goodbye...'                                                    
+ end                                                                   
+*ENDREXX                                                               
+                                                                       
+)END                                                                   
