@@ -1,0 +1,38 @@
+
+ /* REXX copyright 2023 by moshix */                                                       
+ BCIN   = ' '                                                     
+ BCOUT  = ' '                                                     
+ RESULT = ' '                                                     
+ USERIN = ' '                                                     
+ PI     = 3.14                                                    
+                                                                  
+                                                                  
+ CALL IMPORT FSSAPI                                               
+ ADDRESS FSS                                                      
+ CALL FSSINIT                                                     
+                                                                  
+                                                                  
+ CALL FSSTITLE   'REXX CALCULATOR',#WHITE                         
+ CALL FSSTEXT    'EXPR    ',10,19, ,#PROT+#BLUE                   
+ CALL FSSTEXT    '===>'    ,10,28, ,#PROT+#GREEN                  
+ CALL FSSFIELD   'EXPR'    ,10,33,15                              
+ CALL FSSTEXT    'RESULT'  ,11,19, ,#PROT+#BLUE                   
+ CALL FSSTEXT    '===>'    ,11,28, ,#PROT+#GREEN                  
+ CALL FSSFIELD   'RESULTS' ,11,33,15,#PROT                        
+ CALL FSSTEXT('PF3=TERMINATE',FSSHEIGHT(),1, ,#PROT+#HI)          
+ CALL FSSCURSOR 'EXPR'                                            
+                                                                  
+                                                                  
+ DO FOREVER                                                       
+   FKEY=FSSREFRESH()                                              
+   IF FKEY=243 THEN LEAVE                                         
+   USERIN=FSSFGET(EXPR)                                           
+   BCIN=STRIP(USERIN)                                             
+   RESULT = 'BCOUT = '||BCIN                                      
+   INTERPRET RESULT                                               
+   CALL FSSFSET 'RESULTS',BCOUT                                   
+   CALL FSSCOLOR 'RESULTS',#YELLOW                                
+   CALL FSSCURSOR 'EXPR'                                          
+ END                                                              
+ CALL FSSCLOSE                                                    
+ RETURN  0                                                        
